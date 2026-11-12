@@ -1,0 +1,48 @@
+@startuml
+title Открытие депозитов через интернет-банк. С4 уровень контейнеров
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(client, "Клиент", "Клиент")
+Person(manager, "Менеджер бэк-офиса", "Менеджер")
+
+Container_Boundary(InternetBank, "Интернет-банк MVP"){
+    Container(WebInternetBank, "Веб-приложение", "React.js", "Веб-интерфейс")
+    Container(MainSystemInternetBank, "Основной бэкенд", "Java Spring Boot", "Управляет интернет-банком")
+    Container(Orchestrator, "Оркестратор микросервисов", "Java Spring Boot", "Управлят микросервисами")
+    ContainerDb(DatabaseInternetBank, "СУБД", "Oracle", "Хранит актуальные депозиты, данные клиента")
+    ContainerQueue(QueueTasks, "Очередь заявок", "Kafka", "Обмен новыми заявками")
+    ContainerQueue(QueueSync, "Очередь депозитов", "Kafka", "Обмен актуальными депозитами")
+    Container(GateABS, "АБС шлюз", "Java Spring Boot", "Взаимодействует с АБС")
+}
+Container_Boundary(ABS, "АБС", "Управляет банковскими операциями"){
+    Container(WebABS, "Веб-приложение", "Delphi", "Веб-интерфейс")
+    Container(MainSystemABS, "Основной бэкенд", "Delphi, PL/SQL", "Управляет логикой АБС")
+    Container(ApiABS, "API", "Delphi", "Взаимодействует с интернет-банком")
+    Container(SmsABS, "СМС модуль", "Delphi", "Отправляет и получает СМС")
+    ContainerDb(DatabaseABS, "СУБД", "Oracle", "Хранит данные клиента, ставки, депозиты")
+    Container(DepositsABS, "Модуль депозитов", "Delphi", "Управляет депозитами")
+}
+
+Rel(client, WebInternetBank, "Отправка заявки на открытие депозита, https")
+Rel(WebInternetBank, MainSystemInternetBank, "")
+Rel(MainSystemInternetBank, Orchestrator, "")
+Rel(Orchestrator, DatabaseInternetBank, "")
+Rel(Orchestrator, QueueTasks, "")
+Rel(Orchestrator, QueueSync, "")
+Rel(QueueSync, GateABS, "")
+Rel(QueueTasks, GateABS, "")
+
+Rel(manager, WebABS, "Обработка заявки на открытие депозита")
+Rel(WebABS, MainSystemABS, "")
+Rel(MainSystemABS, SmsABS, "")
+Rel(MainSystemABS, DatabaseABS, "")
+Rel(MainSystemABS, DepositsABS, "")
+Rel(MainSystemABS, ApiABS, "")
+Rel(ApiABS, GateABS,"")
+
+Rel(SmsABS, client, "Отправка СМС-кода подтверждения")
+Rel(client,SmsABS, "Подтверждение открытия депозита")
+@enduml
