@@ -1,0 +1,26 @@
+@startuml
+title Передача ставок в колл-центр. С4 уровень контекста
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+System(CallCenter, "Колл-центр партнера", "Взаимодействует с клиентами по запросу банка")
+Container_Boundary(ABS, "АБС", "Управляет банковскими операциями"){
+    Container(WebABS, "Веб-приложение", "Delphi", "Веб-интерфейс")
+    Container(MainSystemABS, "Основной бэкенд", "Delphi, PL/SQL", "Управляет логикой АБС")
+    Container(DepositsExport, "Модуль выгрузки депозитов", "Delphi", "Выгружает актуальные ставки по депозитам")
+    ContainerDb(DatabaseABS, "СУБД", "Oracle", "Хранит данные клиентов, ставки, депозиты")
+    Container(DepositsABS, "Модуль депозитов", "Delphi", "Управляет депозитами")
+}
+System(S3, "S3-хранилище", "Хранит файлы с данными по депозитам")
+
+Rel(WebABS, MainSystemABS, "")
+Rel(MainSystemABS, DatabaseABS, "")
+Rel(MainSystemABS, DepositsABS, "")
+Rel(MainSystemABS, DepositsExport, "")
+
+Rel(CallCenter, S3, "Получение данных о ставках по депозитам", "SFTP")
+Rel(DepositsExport, S3, "Отправляет данные о ставках по депозитам","SFTP")
+
+@enduml

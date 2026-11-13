@@ -22,7 +22,7 @@ Container_Boundary(ABS, "АБС", "Управляет банковскими о�
     Container(MainSystemABS, "Основной бэкенд", "Delphi, PL/SQL", "Управляет логикой АБС")
     Container(ApiABS, "API", "Delphi", "Взаимодействует с интернет-банком")
     Container(SmsABS, "СМС модуль", "Delphi", "Отправляет и получает СМС")
-    ContainerDb(DatabaseABS, "СУБД", "Oracle", "Хранит данные клиента, ставки, депозиты")
+    ContainerDb(DatabaseABS, "СУБД", "Oracle", "Хранит данные клиентов, ставки, депозиты")
     Container(DepositsABS, "Модуль депозитов", "Delphi", "Управляет депозитами")
 }
 
