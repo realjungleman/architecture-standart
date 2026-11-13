@@ -1,0 +1,32 @@
+@startuml
+title Передача ставок в колл-центр. С4 уровень контейнеров
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(CallCenter, "Колл-центр банка", "Взаимодействует с клиентами"){
+    Container(WebCallCenter, "Веб-приложение", "React.js", "Веб-интерфейс")
+    Container(MainSystemCallCenter, "Основной бэкенд", "Java Spring Boot", "Управляет системой КЦ")
+    Container(OrchestratorCallCenter, "Оркестратор микросервисов", "Java Spring Boot", "Управлят микросервисами")
+    Container(DepositsCallCenter,"Сервис депозитов", "Java Spring Boot","Получает данные по депозитам из АБС")
+}
+Container_Boundary(ABS, "АБС", "Управляет банковскими операциями"){
+    Container(WebABS, "Веб-приложение", "Delphi", "Веб-интерфейс")
+    Container(MainSystemABS, "Основной бэкенд", "Delphi, PL/SQL", "Управляет логикой АБС")
+    Container(ApiABS, "API", "Delphi", "Взаимодействует с системой КЦ")
+    ContainerDb(DatabaseABS, "СУБД", "Oracle", "Хранит данные клиентов, ставки, депозиты")
+    Container(DepositsABS, "Модуль депозитов", "Delphi", "Управляет депозитами")
+}
+
+Rel(WebCallCenter, MainSystemCallCenter, "")
+Rel(MainSystemCallCenter, OrchestratorCallCenter, "")
+Rel(OrchestratorCallCenter, DepositsCallCenter, "")
+Rel(DepositsCallCenter, ApiABS, "Получение данных о ставках по депозитам")
+
+Rel(WebABS, MainSystemABS, "")
+Rel(MainSystemABS, DatabaseABS, "")
+Rel(MainSystemABS, DepositsABS, "")
+Rel(MainSystemABS, ApiABS, "")
+
+@enduml

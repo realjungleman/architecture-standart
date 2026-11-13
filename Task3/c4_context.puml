@@ -1,0 +1,19 @@
+@startuml
+title Открытие депозитов через интернет-банк. С4 уровень контекста
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(client, "Клиент", "Клиент")
+Person(manager, "Менеджер бэк-офиса", "Менеджер")
+
+System(InternetBank, "Интернет-банк MVP", "Личный кабинет клиента")
+System(ABS, "АБС", "Управляет банковскими операциями")
+
+Rel(client, InternetBank, "Отправка заявки на открытие депозита")
+Rel(InternetBank, ABS, "Отправка заявки")
+Rel(manager, ABS, "Обработка заявки на открытие депозита")
+Rel(ABS, client, "Отправка СМС-кода подтверждения")
+Rel(client,ABS, "Подтверждение открытия депозита")
+@enduml

@@ -1,0 +1,16 @@
+@startuml
+title Передача ставок в колл-центр. С4 уровень контейнеров
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+System(CallCenter, "Колл-центр партнера", "Взаимодействует с клиентами по запросу банка")
+System(ABS, "АБС", "Управляет банковскими операциями")
+System(S3, "S3-хранилище", "Хранит файлы с данными по депозитам")
+
+
+Rel(CallCenter, S3, "Получение данных о ставках по депозитам")
+Rel(ABS, S3, "Отправляет данные о ставках по депозитам")
+
+@enduml
